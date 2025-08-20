@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using OnlineShopping.Core.Entities;
 
 namespace OnlineShopping.Infrastructure.Persistence;
 
@@ -8,6 +9,17 @@ public class ApplicationDbContext : DbContext
         : base(options)
     {
     }
+
+    // DbSets
+    public DbSet<Customer> Customers => Set<Customer>();
+    public DbSet<Address> Addresses => Set<Address>();
+    public DbSet<Category> Categories => Set<Category>();
+    public DbSet<Product> Products => Set<Product>();
+    public DbSet<Order> Orders => Set<Order>();
+    public DbSet<OrderItem> OrderItems => Set<OrderItem>();
+    public DbSet<ShoppingCart> ShoppingCarts => Set<ShoppingCart>();
+    public DbSet<CartItem> CartItems => Set<CartItem>();
+    public DbSet<Payment> Payments => Set<Payment>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
