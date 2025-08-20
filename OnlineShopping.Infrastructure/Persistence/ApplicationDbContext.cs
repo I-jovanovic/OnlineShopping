@@ -25,6 +25,19 @@ public class ApplicationDbContext : DbContext
     {
         base.OnModelCreating(modelBuilder);
         
+        // Configure Product-Category relationship as optional
+        modelBuilder.Entity<Product>()
+            .HasOne(p => p.Category)
+            .WithMany(c => c.Products)
+            .HasForeignKey(p => p.CategoryId)
+            .IsRequired(false);
+            
+        // Configure Order-Payment relationship as one-to-one
+        modelBuilder.Entity<Order>()
+            .HasOne(o => o.Payment)
+            .WithOne(p => p.Order)
+            .HasForeignKey<Payment>(p => p.OrderId);
+            
         modelBuilder.ApplyConfigurationsFromAssembly(typeof(ApplicationDbContext).Assembly);
     }
 }

@@ -20,8 +20,8 @@ public class Product : BaseEntity
     public decimal? Weight { get; set; }
     public string? Dimensions { get; set; }
     
-    public Guid CategoryId { get; set; }
+    public Guid? CategoryId { get; set; }
     
-    public virtual Category Category { get; set; } = null!;
+    public virtual Category? Category { get; set; }
     public virtual ICollection<OrderItem> OrderItems { get; set; } = new List<OrderItem>();
 }

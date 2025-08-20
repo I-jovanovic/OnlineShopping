@@ -11,6 +11,7 @@ public class Payment : BaseEntity
     public string? TransactionId { get; set; }
     public string? GatewayResponse { get; set; }
     public DateTime? ProcessedAt { get; set; }
+    public DateTime PaymentDate { get; set; }
     
     public Guid OrderId { get; set; }
     

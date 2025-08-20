@@ -4,6 +4,7 @@ using Microsoft.Extensions.DependencyInjection;
 using OnlineShopping.Core.Interfaces;
 using OnlineShopping.Infrastructure.Persistence;
 using OnlineShopping.Infrastructure.Persistence.Repositories;
+using OnlineShopping.Infrastructure.Services;
 
 namespace OnlineShopping.Infrastructure.Extensions;
 
@@ -18,11 +19,27 @@ public static class ServiceCollectionExtensions
         services.AddDbContext<ApplicationDbContext>(options =>
             options.UseSqlServer(configuration.GetConnectionString("DefaultConnection")));
 
-        // Add repositories
+        // Add AutoMapper
+        services.AddAutoMapper(typeof(ServiceCollectionExtensions).Assembly);
+
+        // Add generic repository and unit of work
         services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
-        
-        // Add Unit of Work
         services.AddScoped<IUnitOfWork, UnitOfWork>();
+
+        // Add specific repositories
+        services.AddScoped<ICustomerRepository, CustomerRepository>();
+        services.AddScoped<IProductRepository, ProductRepository>();
+        services.AddScoped<IOrderRepository, OrderRepository>();
+        services.AddScoped<IShoppingCartRepository, ShoppingCartRepository>();
+        services.AddScoped<ICategoryRepository, CategoryRepository>();
+        services.AddScoped<IPaymentRepository, PaymentRepository>();
+
+        // Add business services
+        services.AddScoped<ICustomerService, CustomerService>();
+        services.AddScoped<IProductService, ProductService>();
+        services.AddScoped<IOrderService, OrderService>();
+        services.AddScoped<IShoppingCartService, ShoppingCartService>();
+        services.AddScoped<ICategoryService, CategoryService>();
 
         return services;
     }

@@ -12,6 +12,9 @@ public class Order : BaseEntity
     public decimal? TaxAmount { get; set; }
     public decimal? ShippingAmount { get; set; }
     public string? Notes { get; set; }
+    public string PaymentMethod { get; set; } = string.Empty;
+    public DateTime? ShippedDate { get; set; }
+    public DateTime? DeliveredDate { get; set; }
     
     public Guid CustomerId { get; set; }
     public Guid ShippingAddressId { get; set; }
@@ -21,7 +24,7 @@ public class Order : BaseEntity
     public virtual Address ShippingAddress { get; set; } = null!;
     public virtual Address BillingAddress { get; set; } = null!;
     public virtual ICollection<OrderItem> OrderItems { get; set; } = new List<OrderItem>();
-    public virtual ICollection<Payment> Payments { get; set; } = new List<Payment>();
+    public virtual Payment? Payment { get; set; }
 }
 
 public enum OrderStatus

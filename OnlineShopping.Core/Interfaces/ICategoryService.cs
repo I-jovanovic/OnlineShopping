@@ -1,4 +1,4 @@
-using OnlineShopping.Core.Entities;
+using OnlineShopping.Core.DTOs;
 
 namespace OnlineShopping.Core.Interfaces;
 
@@ -7,13 +7,10 @@ namespace OnlineShopping.Core.Interfaces;
 /// </summary>
 public interface ICategoryService : IService
 {
-    Task<Category> CreateCategoryAsync(string name, string? description, Guid? parentCategoryId = null);
-    Task<Category?> GetCategoryByIdAsync(Guid id);
-    Task<IEnumerable<Category>> GetAllCategoriesAsync();
-    Task<IEnumerable<Category>> GetRootCategoriesAsync();
-    Task<IEnumerable<Category>> GetSubCategoriesAsync(Guid parentCategoryId);
-    Task<Category> UpdateCategoryAsync(Category category);
-    Task DeleteCategoryAsync(Guid id);
-    Task<bool> HasProductsAsync(Guid categoryId);
-    Task<bool> HasSubCategoriesAsync(Guid categoryId);
+    Task<CategoryDto> CreateCategoryAsync(CreateCategoryDto dto);
+    Task<CategoryDto?> GetCategoryAsync(Guid categoryId);
+    Task<IEnumerable<CategoryDto>> GetRootCategoriesAsync();
+    Task<IEnumerable<CategoryDto>> GetSubCategoriesAsync(Guid parentId);
+    Task<CategoryDto> UpdateCategoryAsync(Guid categoryId, UpdateCategoryDto dto);
+    Task<bool> DeleteCategoryAsync(Guid categoryId);
 }

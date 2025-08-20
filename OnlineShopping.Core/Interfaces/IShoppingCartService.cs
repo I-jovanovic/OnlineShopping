@@ -1,4 +1,4 @@
-using OnlineShopping.Core.Entities;
+using OnlineShopping.Core.DTOs;
 
 namespace OnlineShopping.Core.Interfaces;
 
@@ -7,13 +7,11 @@ namespace OnlineShopping.Core.Interfaces;
 /// </summary>
 public interface IShoppingCartService : IService
 {
-    Task<ShoppingCart> GetOrCreateCartAsync(Guid customerId);
-    Task<ShoppingCart?> GetCartByIdAsync(Guid cartId);
-    Task<CartItem> AddItemAsync(Guid customerId, Guid productId, int quantity);
-    Task<CartItem> UpdateItemQuantityAsync(Guid cartItemId, int quantity);
-    Task RemoveItemAsync(Guid cartItemId);
-    Task ClearCartAsync(Guid customerId);
-    Task<decimal> GetCartTotalAsync(Guid customerId);
-    Task<int> GetCartItemCountAsync(Guid customerId);
-    Task<bool> IsItemInCartAsync(Guid customerId, Guid productId);
+    Task<ShoppingCartDto> GetOrCreateCartAsync(Guid customerId);
+    Task<ShoppingCartDto?> GetCartAsync(Guid cartId);
+    Task<ShoppingCartDto> AddItemToCartAsync(Guid customerId, AddToCartDto dto);
+    Task<ShoppingCartDto> UpdateCartItemAsync(Guid cartId, Guid cartItemId, int quantity);
+    Task<ShoppingCartDto> RemoveItemFromCartAsync(Guid cartId, Guid cartItemId);
+    Task<bool> ClearCartAsync(Guid cartId);
+    Task RemoveExpiredCartsAsync();
 }

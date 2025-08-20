@@ -1,4 +1,4 @@
-using OnlineShopping.Core.Entities;
+using OnlineShopping.Core.DTOs;
 
 namespace OnlineShopping.Core.Interfaces;
 
@@ -7,16 +7,10 @@ namespace OnlineShopping.Core.Interfaces;
 /// </summary>
 public interface ICustomerService : IService
 {
-    Task<Customer> CreateCustomerAsync(string email, string firstName, string lastName, string? phoneNumber);
-    Task<Customer?> GetCustomerByIdAsync(Guid id);
-    Task<Customer?> GetCustomerByEmailAsync(string email);
-    Task<IEnumerable<Customer>> GetAllCustomersAsync();
-    Task<Customer> UpdateCustomerAsync(Customer customer);
-    Task DeleteCustomerAsync(Guid id);
-    Task<bool> CustomerExistsAsync(string email);
-    
-    Task<Address> AddAddressAsync(Guid customerId, Address address);
-    Task<Address> UpdateAddressAsync(Address address);
-    Task DeleteAddressAsync(Guid addressId);
-    Task<IEnumerable<Address>> GetCustomerAddressesAsync(Guid customerId);
+    Task<CustomerDto> CreateCustomerAsync(CreateCustomerDto dto);
+    Task<CustomerDto?> GetCustomerAsync(Guid customerId);
+    Task<CustomerDto?> GetCustomerByEmailAsync(string email);
+    Task<CustomerDto> UpdateCustomerAsync(Guid customerId, UpdateCustomerDto dto);
+    Task<bool> DeleteCustomerAsync(Guid customerId);
+    Task<IEnumerable<AddressDto>> GetCustomerAddressesAsync(Guid customerId);
 }

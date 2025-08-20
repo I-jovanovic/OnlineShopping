@@ -1,3 +1,4 @@
+using OnlineShopping.Core.DTOs;
 using OnlineShopping.Core.Entities;
 
 namespace OnlineShopping.Core.Interfaces;
@@ -7,15 +8,11 @@ namespace OnlineShopping.Core.Interfaces;
 /// </summary>
 public interface IOrderService : IService
 {
-    Task<Order> CreateOrderFromCartAsync(Guid customerId, Guid shippingAddressId, Guid billingAddressId);
-    Task<Order> CreateOrderAsync(Guid customerId, IEnumerable<CartItem> items, Guid shippingAddressId, Guid billingAddressId);
-    Task<Order?> GetOrderByIdAsync(Guid id);
-    Task<Order?> GetOrderByOrderNumberAsync(string orderNumber);
-    Task<IEnumerable<Order>> GetCustomerOrdersAsync(Guid customerId);
-    Task<IEnumerable<Order>> GetAllOrdersAsync();
-    Task<Order> UpdateOrderStatusAsync(Guid orderId, OrderStatus status);
-    Task CancelOrderAsync(Guid orderId);
-    Task<decimal> CalculateOrderTotalAsync(IEnumerable<CartItem> items);
-    Task<string> GenerateOrderNumberAsync();
-    Task<bool> CanCancelOrderAsync(Guid orderId);
+    Task<OrderDto> CreateOrderAsync(CreateOrderDto dto);
+    Task<OrderDto?> GetOrderAsync(Guid orderId);
+    Task<OrderDto?> GetOrderByNumberAsync(string orderNumber);
+    Task<IEnumerable<OrderDto>> GetCustomerOrdersAsync(Guid customerId);
+    Task<IEnumerable<OrderDto>> GetOrdersByStatusAsync(OrderStatus status);
+    Task<OrderDto> UpdateOrderStatusAsync(Guid orderId, OrderStatus newStatus);
+    Task<bool> CancelOrderAsync(Guid orderId);
 }
