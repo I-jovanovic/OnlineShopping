@@ -1,0 +1,62 @@
+version: '3.8'
+
+services:
+  api:
+    build:
+      context: .
+      dockerfile: OnlineShopping/Dockerfile
+    container_name: onlineshopping-api
+    ports:
+      - "5000:80"
+      - "5001:443"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=http://+:80;https://+:443
+      - ConnectionStrings__DefaultConnection=Server=sqlserver;Database=${SQL_DATABASE};User Id=sa;Password=${SQL_SA_PASSWORD};TrustServerCertificate=true;MultipleActiveResultSets=true
+      - Hangfire__ConnectionString=Server=sqlserver;Database=${SQL_DATABASE};User Id=sa;Password=${SQL_SA_PASSWORD};TrustServerCertificate=true;MultipleActiveResultSets=true
+      - Redis__ConnectionString=redis:6379
+      - Redis__InstanceName=OnlineShopping
+      - EmailSettings__SmtpHost=smtp.gmail.com
+      - EmailSettings__SmtpPort=587
+      - EmailSettings__SmtpUsername=${SMTP_USERNAME:-test@example.com}
+      - EmailSettings__SmtpPassword=${SMTP_PASSWORD:-test123}
+      - EmailSettings__UseSsl=true
+      - EmailSettings__FromEmail=noreply@onlineshopping.com
+      - EmailSettings__FromName=Online Shopping
+    depends_on:
+      - sqlserver
+      - redis
+    networks:
+      - onlineshopping-network
+
+  sqlserver:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    container_name: onlineshopping-sqlserver
+    ports:
+      - "1433:1433"
+    environment:
+      - ACCEPT_EULA=Y
+      - SA_PASSWORD=${SQL_SA_PASSWORD}
+      - MSSQL_PID=Express
+    volumes:
+      - sqldata:/var/opt/mssql
+    networks:
+      - onlineshopping-network
+
+  redis:
+    image: redis:7-alpine
+    container_name: onlineshopping-redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redisdata:/data
+    networks:
+      - onlineshopping-network
+
+networks:
+  onlineshopping-network:
+    driver: bridge
+
+volumes:
+  sqldata:
+  redisdata:

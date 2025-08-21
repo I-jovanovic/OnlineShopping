@@ -71,4 +71,17 @@ public class OrderRepository : Repository<Order>, IOrderRepository
 
         return orderNumber;
     }
+
+    public async Task<IEnumerable<Order>> GetCustomerOrdersAsync(Guid customerId, DateTime startDate, DateTime endDate)
+    {
+        return await _dbSet
+            .Include(o => o.OrderItems)
+                .ThenInclude(oi => oi.Product)
+            .Include(o => o.Customer)
+            .Where(o => o.CustomerId == customerId 
+                && o.OrderDate >= startDate 
+                && o.OrderDate <= endDate)
+            .OrderBy(o => o.OrderDate)
+            .ToListAsync();
+    }
 }

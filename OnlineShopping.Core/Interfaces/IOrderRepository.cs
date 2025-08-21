@@ -13,4 +13,5 @@ public interface IOrderRepository : IRepository<Order>
     Task<Order?> GetWithItemsAsync(Guid orderId);
     Task<Order?> GetWithAllDetailsAsync(Guid orderId);
     Task<string> GenerateUniqueOrderNumberAsync();
+    Task<IEnumerable<Order>> GetCustomerOrdersAsync(Guid customerId, DateTime startDate, DateTime endDate);
 }

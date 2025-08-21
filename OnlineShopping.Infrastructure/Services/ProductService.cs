@@ -79,6 +79,12 @@ public class ProductService : IProductService
         return _mapper.Map<IEnumerable<ProductDto>>(products);
     }
 
+    public async Task<IEnumerable<ProductDto>> GetAllProductsAsync()
+    {
+        var products = await _productRepository.GetAllAsync();
+        return _mapper.Map<IEnumerable<ProductDto>>(products);
+    }
+
     public async Task<IEnumerable<ProductDto>> GetActiveProductsAsync()
     {
         var products = await _productRepository.GetActiveProductsAsync();
@@ -96,12 +102,12 @@ public class ProductService : IProductService
         return _mapper.Map<IEnumerable<ProductDto>>(products);
     }
 
-    public async Task<ProductDto> UpdateProductAsync(Guid productId, UpdateProductDto dto)
+    public async Task<ProductDto?> UpdateProductAsync(Guid productId, UpdateProductDto dto)
     {
         var product = await _productRepository.GetByIdAsync(productId);
         if (product == null)
         {
-            throw new NotFoundException($"Product with ID {productId} not found");
+            return null;
         }
 
         if (!string.IsNullOrEmpty(dto.Sku) && dto.Sku != product.Sku)

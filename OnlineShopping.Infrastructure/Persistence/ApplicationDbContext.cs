@@ -38,6 +38,60 @@ public class ApplicationDbContext : DbContext
             .WithOne(p => p.Order)
             .HasForeignKey<Payment>(p => p.OrderId);
             
+        // Configure Order-Address relationships to prevent cascade conflicts
+        modelBuilder.Entity<Order>()
+            .HasOne(o => o.ShippingAddress)
+            .WithMany()
+            .HasForeignKey(o => o.ShippingAddressId)
+            .OnDelete(DeleteBehavior.Restrict);
+            
+        modelBuilder.Entity<Order>()
+            .HasOne(o => o.BillingAddress)
+            .WithMany()
+            .HasForeignKey(o => o.BillingAddressId)
+            .OnDelete(DeleteBehavior.Restrict);
+            
+        // Configure decimal precision for monetary values
+        modelBuilder.Entity<Product>()
+            .Property(p => p.Price)
+            .HasPrecision(18, 2);
+            
+        modelBuilder.Entity<Product>()
+            .Property(p => p.Weight)
+            .HasPrecision(18, 2);
+            
+        modelBuilder.Entity<Order>()
+            .Property(o => o.TotalAmount)
+            .HasPrecision(18, 2);
+            
+        modelBuilder.Entity<Order>()
+            .Property(o => o.TaxAmount)
+            .HasPrecision(18, 2);
+            
+        modelBuilder.Entity<Order>()
+            .Property(o => o.ShippingAmount)
+            .HasPrecision(18, 2);
+            
+        modelBuilder.Entity<OrderItem>()
+            .Property(oi => oi.UnitPrice)
+            .HasPrecision(18, 2);
+            
+        modelBuilder.Entity<OrderItem>()
+            .Property(oi => oi.TotalPrice)
+            .HasPrecision(18, 2);
+            
+        modelBuilder.Entity<OrderItem>()
+            .Property(oi => oi.Discount)
+            .HasPrecision(18, 2);
+            
+        modelBuilder.Entity<CartItem>()
+            .Property(ci => ci.Price)
+            .HasPrecision(18, 2);
+            
+        modelBuilder.Entity<Payment>()
+            .Property(p => p.Amount)
+            .HasPrecision(18, 2);
+            
         modelBuilder.ApplyConfigurationsFromAssembly(typeof(ApplicationDbContext).Assembly);
     }
 }

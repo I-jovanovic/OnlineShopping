@@ -6,49 +6,37 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using OnlineShopping.Core.Configuration;
 using OnlineShopping.Core.Interfaces;
+using OnlineShopping.Infrastructure.Http;
 using OnlineShopping.Infrastructure.Persistence;
 using OnlineShopping.Infrastructure.Persistence.Repositories;
 using OnlineShopping.Infrastructure.Services;
 
-namespace OnlineShopping.Infrastructure.Extensions;
+namespace OnlineShopping.Infrastructure.DependencyInjection;
 
 public static class ServiceCollectionExtensions
 {
-    public static IServiceCollection AddInfrastructure(this IServiceCollection services, IConfiguration configuration)
+    public static IServiceCollection AddInfrastructureServices(this IServiceCollection services, IConfiguration configuration)
     {
+        // Database
         services.AddDbContext<ApplicationDbContext>(options =>
-            options.UseSqlServer(configuration.GetConnectionString("DefaultConnection")));
+        {
+            var connectionString = configuration.GetConnectionString("DefaultConnection");
+            options.UseSqlServer(connectionString, sqlOptions =>
+            {
+                sqlOptions.EnableRetryOnFailure(maxRetryCount: 3, maxRetryDelay: TimeSpan.FromSeconds(5), errorNumbersToAdd: null);
+            });
+        });
 
-        services.AddAutoMapper(typeof(ServiceCollectionExtensions).Assembly);
-
+        // Repositories
         services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
-        services.AddScoped<IUnitOfWork, UnitOfWork>();
-        services.AddScoped<ICustomerRepository, CustomerRepository>();
         services.AddScoped<IProductRepository, ProductRepository>();
+        services.AddScoped<ICustomerRepository, CustomerRepository>();
         services.AddScoped<IOrderRepository, OrderRepository>();
         services.AddScoped<IShoppingCartRepository, ShoppingCartRepository>();
         services.AddScoped<ICategoryRepository, CategoryRepository>();
-        services.AddScoped<IPaymentRepository, PaymentRepository>();
+        services.AddScoped<IUnitOfWork, UnitOfWork>();
 
-        var redisConnectionString = configuration.GetSection("Redis:ConnectionString").Value;
-        if (!string.IsNullOrEmpty(redisConnectionString))
-        {
-            services.AddStackExchangeRedisCache(options =>
-            {
-                options.Configuration = redisConnectionString;
-                options.InstanceName = configuration.GetSection("Redis:InstanceName").Value ?? "OnlineShopping";
-            });
-        }
-        else
-        {
-            services.AddDistributedMemoryCache();
-        }
-        
-        services.AddScoped<ICacheService, DistributedCacheService>();
-        
-        services.AddScoped<CustomerService>();
-        services.AddScoped<ICustomerService, CustomerService>();
-        
+        // Services
         services.AddScoped<ProductService>();
         services.AddScoped<IProductService>(provider =>
         {
@@ -58,7 +46,7 @@ public static class ServiceCollectionExtensions
             return new CachedProductService(productService, cacheService, logger);
         });
         
-        services.AddScoped<OrderService>();
+        services.AddScoped<ICustomerService, CustomerService>();
         services.AddScoped<IOrderService, OrderService>();
         
         services.AddScoped<ShoppingCartService>();
@@ -70,14 +58,29 @@ public static class ServiceCollectionExtensions
             return new CachedShoppingCartService(cartService, cacheService, logger);
         });
         
-        services.AddScoped<CategoryService>();
         services.AddScoped<ICategoryService, CategoryService>();
         
+        // Cache service
+        services.AddSingleton<ICacheService, DistributedCacheService>();
+        
+        // Email and PDF services with resilience
         services.Configure<EmailSettings>(configuration.GetSection("EmailSettings"));
-        services.AddScoped<IEmailService, EmailService>();
+        services.AddScoped<EmailService>();
+        services.AddScoped<IEmailService>(provider =>
+        {
+            var emailService = provider.GetRequiredService<EmailService>();
+            var logger = provider.GetRequiredService<ILogger<ResilientEmailService>>();
+            return new ResilientEmailService(emailService, logger);
+        });
         services.AddScoped<IPdfGeneratorService, PdfGeneratorService>();
         
+        // HTTP client with resilience
+        services.AddHttpClient<IResilientHttpClient, ResilientHttpClient>();
+        
+        // Background job service
         services.AddScoped<IBackgroundJobService, BackgroundJobService>();
+        
+        // Hangfire
         services.AddHangfire(config => config
             .SetDataCompatibilityLevel(CompatibilityLevel.Version_180)
             .UseSimpleAssemblyNameTypeSerializer()

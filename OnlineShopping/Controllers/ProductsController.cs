@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
 using OnlineShopping.Core.DTOs;
 using OnlineShopping.Core.Exceptions;
 using OnlineShopping.Core.Interfaces;
@@ -8,6 +9,7 @@ namespace OnlineShopping.Controllers;
 /// <summary>
 /// Product management endpoints
 /// </summary>
+[EnableRateLimiting("Api")]
 public class ProductsController : ApiControllerBase
 {
     private readonly IProductService _productService;

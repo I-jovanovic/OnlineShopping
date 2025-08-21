@@ -11,4 +11,5 @@ public interface ICustomerRepository : IRepository<Customer>
     Task<Customer?> GetWithAddressesAsync(Guid customerId);
     Task<Customer?> GetWithOrdersAsync(Guid customerId);
     Task<bool> EmailExistsAsync(string email);
+    Task<IEnumerable<Customer>> GetActiveCustomersAsync();
 }

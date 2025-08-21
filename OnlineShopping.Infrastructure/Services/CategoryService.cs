@@ -65,6 +65,12 @@ public class CategoryService : ICategoryService
         return category != null ? _mapper.Map<CategoryDto>(category) : null;
     }
 
+    public async Task<IEnumerable<CategoryDto>> GetAllCategoriesAsync()
+    {
+        var categories = await _categoryRepository.GetAllAsync();
+        return _mapper.Map<IEnumerable<CategoryDto>>(categories);
+    }
+
     public async Task<IEnumerable<CategoryDto>> GetRootCategoriesAsync()
     {
         var categories = await _categoryRepository.GetRootCategoriesAsync();
@@ -77,12 +83,12 @@ public class CategoryService : ICategoryService
         return _mapper.Map<IEnumerable<CategoryDto>>(categories);
     }
 
-    public async Task<CategoryDto> UpdateCategoryAsync(Guid categoryId, UpdateCategoryDto dto)
+    public async Task<CategoryDto?> UpdateCategoryAsync(Guid categoryId, UpdateCategoryDto dto)
     {
         var category = await _categoryRepository.GetByIdAsync(categoryId);
         if (category == null)
         {
-            throw new NotFoundException($"Category with ID {categoryId} not found");
+            return null;
         }
 
         if (!string.IsNullOrEmpty(dto.Name) && dto.Name != category.Name)

@@ -38,4 +38,11 @@ public class CustomerRepository : Repository<Customer>, ICustomerRepository
         return await _dbSet
             .AnyAsync(c => c.Email.ToLower() == email.ToLower());
     }
+
+    public async Task<IEnumerable<Customer>> GetActiveCustomersAsync()
+    {
+        // Return all customers since we don't have an IsActive flag
+        // In production, you might want to filter by last order date or other criteria
+        return await _dbSet.ToListAsync();
+    }
 }

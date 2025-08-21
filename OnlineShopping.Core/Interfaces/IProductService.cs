@@ -10,10 +10,11 @@ public interface IProductService : IService
     Task<ProductDto> CreateProductAsync(CreateProductDto dto);
     Task<ProductDto?> GetProductAsync(Guid productId);
     Task<ProductDto?> GetProductBySkuAsync(string sku);
+    Task<IEnumerable<ProductDto>> GetAllProductsAsync();
     Task<IEnumerable<ProductDto>> GetProductsByCategoryAsync(Guid categoryId);
     Task<IEnumerable<ProductDto>> GetActiveProductsAsync();
     Task<IEnumerable<ProductDto>> SearchProductsAsync(string searchTerm);
-    Task<ProductDto> UpdateProductAsync(Guid productId, UpdateProductDto dto);
+    Task<ProductDto?> UpdateProductAsync(Guid productId, UpdateProductDto dto);
     Task<bool> UpdateStockAsync(Guid productId, int quantity);
     Task<bool> DeleteProductAsync(Guid productId);
 }

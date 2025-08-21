@@ -47,4 +47,16 @@ public class CategoryRepository : Repository<Category>, ICategoryRepository
         return await _context.Set<Product>()
             .AnyAsync(p => p.CategoryId == categoryId);
     }
+
+    public async Task<bool> NameExistsAsync(string name, Guid? excludeId = null)
+    {
+        var query = _dbSet.Where(c => c.Name.ToLower() == name.ToLower());
+        
+        if (excludeId.HasValue)
+        {
+            query = query.Where(c => c.Id != excludeId.Value);
+        }
+        
+        return await query.AnyAsync();
+    }
 }
